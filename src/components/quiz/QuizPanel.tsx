@@ -844,21 +844,23 @@ export function QuizPanel({ cards, onClose, initialSessionId }: QuizPanelProps) 
 
               <div className="relative flex flex-col items-center pt-2 text-center">
                 {tier && (
-                  <div className={`flex h-16 w-16 items-center justify-center rounded-full ${tier.iconClasses}`}>
-                    <tier.icon size={30} aria-hidden="true" />
+                  <div className={`flex h-20 w-20 items-center justify-center rounded-full ${tier.iconClasses}`}>
+                    <tier.icon size={36} aria-hidden="true" />
                   </div>
                 )}
-                <h4 className="mt-4 text-xl font-semibold text-ink">{tier?.headline ?? 'Quiz complete'}</h4>
-                <p className="mt-1.5 max-w-sm text-sm text-ink-secondary">{tier?.subtext}</p>
+                <h4 className="mt-4 text-2xl font-semibold text-ink sm:text-xl">{tier?.headline ?? 'Quiz complete'}</h4>
+                <p className="mt-1.5 max-w-sm text-base text-ink-secondary sm:text-sm">{tier?.subtext}</p>
 
                 <div className="mt-6 flex items-center gap-3">
-                  <ScoreRing percent={Math.round(((summary?.correct ?? correctCount) / Math.max(1, summary?.total ?? questions.length)) * 100)} />
+                  <div className="-mb-1 scale-125 sm:scale-100">
+                    <ScoreRing percent={Math.round(((summary?.correct ?? correctCount) / Math.max(1, summary?.total ?? questions.length)) * 100)} />
+                  </div>
                   <div className="text-left">
-                    <p className="text-2xl font-semibold text-ink">
+                    <p className="text-3xl font-semibold text-ink sm:text-2xl">
                       {summary?.correct ?? correctCount}
-                      <span className="text-base font-normal text-ink-muted"> / {summary?.total ?? questions.length}</span>
+                      <span className="text-lg font-normal text-ink-muted sm:text-base"> / {summary?.total ?? questions.length}</span>
                     </p>
-                    <p className="text-xs text-ink-secondary">correct answers</p>
+                    <p className="text-sm text-ink-secondary">correct answers</p>
                   </div>
                 </div>
               </div>
