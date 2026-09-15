@@ -80,6 +80,18 @@ export interface StudySessionRecord {
   durationSeconds: number;
 }
 
+export interface QuizSessionRecord {
+  id: string;
+  datasetId: string;
+  startedAt: string;
+  endedAt: string | null;
+  questions: any[]; // QuizQuestion[] (kept any to avoid circular imports)
+  responses: any[]; // QuizResponse[]
+  currentIndex: number;
+  config: any; // QuizConfig
+  status: 'in-progress' | 'completed';
+}
+
 export interface ActivityDay {
   date: string; // yyyy-MM-dd, local calendar date
   reviews: number;

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { useApp } from '@/store/AppContext';
@@ -17,17 +17,98 @@ export default function App() {
   const {
     state: { bootstrapped, dbError }
   } = useApp();
-  const [activeView, setActiveView] = useState<ViewId>('dashboard');
-  const [libraryTopicFilter, setLibraryTopicFilter] = useState<string | null>(null);
+  const [activeView, setActiveView] = useState<ViewId>(() => {
+    const p = window.location.pathname.replace(/^\//, '');
+    switch (p) {
+      case 'library':
+        return 'library';
+      case 'study':
+        return 'study';
+      case 'import':
+        return 'import';
+      case 'progress':
+        return 'progress';
+      case 'settings':
+        return 'settings';
+      case 'backup':
+        return 'backup';
+      case 'print':
+        return 'print';
+      case '':
+      case 'dashboard':
+      default:
+        return 'dashboard';
+    }
+  });
+  const [libraryTopicFilter, setLibraryTopicFilter] = useState<string | null>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('topic') ?? null;
+  });
 
-  const navigate = useCallback((view: ViewId) => {
+  const viewToPath = useCallback((view: ViewId, opts?: { topic?: string }) => {
+    switch (view) {
+      case 'dashboard':
+        return '/';
+      case 'study':
+        if (opts?.topic) return `/study?topic=${encodeURIComponent(opts.topic)}`;
+        return '/study';
+      default:
+        return `/${view}`;
+    }
+  }, []);
+
+  const navigate = useCallback((view: ViewId, opts?: { topic?: string }) => {
+    const path = viewToPath(view, opts);
+    window.history.pushState({}, '', path);
     setActiveView(view);
+    setLibraryTopicFilter(opts?.topic ?? null);
     window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [viewToPath]);
+
+  useEffect(() => {
+    const onPop = () => {
+      const p = window.location.pathname.replace(/^\//, '');
+      const params = new URLSearchParams(window.location.search);
+      const topic = params.get('topic');
+      switch (p) {
+        case 'library':
+          setActiveView('library');
+          setLibraryTopicFilter(null);
+          break;
+        case 'study':
+          setActiveView('study');
+          setLibraryTopicFilter(topic ?? null);
+          break;
+        case 'import':
+          setActiveView('import');
+          break;
+        case 'progress':
+          setActiveView('progress');
+          break;
+        case 'settings':
+          setActiveView('settings');
+          break;
+        case 'backup':
+          setActiveView('backup');
+          break;
+        case 'print':
+          setActiveView('print');
+          break;
+        case '':
+        case 'dashboard':
+        default:
+          setActiveView('dashboard');
+          setLibraryTopicFilter(null);
+          break;
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
   }, []);
 
   const openTopicInStudy = useCallback((topic: string | null) => {
     setLibraryTopicFilter(topic);
-    setActiveView('study');
+    navigate('study');
   }, []);
 
   if (!bootstrapped) {

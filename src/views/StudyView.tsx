@@ -5,6 +5,7 @@ import type { ViewId } from '@/App';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { Flashcard } from '@/components/study/Flashcard';
+import { QuizPanel } from '@/components/quiz/QuizPanel';
 import { RatingControls } from '@/components/study/RatingControls';
 import { SessionProgress } from '@/components/study/SessionProgress';
 import { SessionSummary } from '@/components/study/SessionSummary';
@@ -26,6 +27,14 @@ export function StudyView({ topicFilter, onExitTopicFilter, onNavigate }: StudyV
   const { prevCard, skipCard, hideCard } = useApp().actions;
 
   const [confirmEndOpen, setConfirmEndOpen] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [sharedQuizId, setSharedQuizId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('quiz');
+    setSharedQuizId(q);
+  }, []);
   const startedForTopic = useRef<string | null>(null);
 
   useEffect(() => {
@@ -146,11 +155,23 @@ export function StudyView({ topicFilter, onExitTopicFilter, onNavigate }: StudyV
         onEnd={requestEndSession}
       />
 
-      <Flashcard card={currentCard} revealed={activeSession.revealed} onReveal={revealCard} onPrev={prevCard} onNext={skipCard} onHide={hideCard} />
-
-      <div className="mt-6">
-        <RatingControls disabled={!activeSession.revealed} onRate={rateCard} />
+      <div className="mb-4 flex justify-end">
+        <button className="btn btn-outline" onClick={() => setShowQuiz((s) => !s)}>
+          {showQuiz ? 'Hide Quiz' : 'Open Quiz'}
+        </button>
       </div>
+
+      {showQuiz && <QuizPanel cards={cards} onClose={() => setShowQuiz(false)} initialSessionId={sharedQuizId} />}
+
+      {!showQuiz && (
+        <>
+          <Flashcard card={currentCard} revealed={activeSession.revealed} onReveal={revealCard} onPrev={prevCard} onNext={skipCard} onHide={hideCard} />
+
+          <div className="mt-6">
+            <RatingControls disabled={!activeSession.revealed} onRate={rateCard} />
+          </div>
+        </>
+      )}
 
       {ui.showKeyboardShortcuts && (
         <p className="mt-4 text-center text-xs text-ink-muted">

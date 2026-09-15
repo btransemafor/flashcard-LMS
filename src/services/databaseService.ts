@@ -24,6 +24,7 @@ class LearningPlaygroundDB extends Dexie {
   datasets!: Table<Dataset, string>;
   cards!: Table<Card, string>;
   studySessions!: Table<StudySessionRecord, string>;
+  quizSessions!: Table<any, string>;
   activity!: Table<ActivityDay, string>;
   workbookBinaries!: Table<WorkbookBinaryRecord, string>;
   fileHandles!: Table<FileHandleRecord, string>;
@@ -34,6 +35,7 @@ class LearningPlaygroundDB extends Dexie {
       datasets: 'id, updatedAt',
       cards: 'id, datasetId, topic',
       studySessions: 'id, datasetId, startedAt',
+      quizSessions: 'id, datasetId, startedAt',
       activity: 'date',
       workbookBinaries: 'datasetId',
       fileHandles: 'datasetId'
@@ -102,6 +104,26 @@ export async function addStudySession(session: StudySessionRecord): Promise<void
   await guarded(() => db.studySessions.put(session));
 }
 
+export async function addQuizSession(session: any): Promise<void> {
+  await guarded(() => db.quizSessions.put(session));
+}
+
+export async function getQuizSession(id: string): Promise<any | undefined> {
+  return guarded(() => db.quizSessions.get(id));
+}
+
+export async function updateQuizSession(session: any): Promise<void> {
+  await guarded(() => db.quizSessions.put(session));
+}
+
+export async function listQuizSessions(datasetId: string): Promise<any[]> {
+  return guarded(() => db.quizSessions.where('datasetId').equals(datasetId).toArray());
+}
+
+export async function deleteQuizSession(id: string): Promise<void> {
+  await guarded(() => db.quizSessions.delete(id));
+}
+
 export async function getStudySessions(datasetId: string): Promise<StudySessionRecord[]> {
   return guarded(() => db.studySessions.where('datasetId').equals(datasetId).toArray());
 }
@@ -138,12 +160,13 @@ export async function clearAllLocalData(): Promise<void> {
   await guarded(async () => {
     await db.transaction(
       'rw',
-      [db.datasets, db.cards, db.studySessions, db.activity, db.workbookBinaries, db.fileHandles],
+      [db.datasets, db.cards, db.studySessions, db.quizSessions, db.activity, db.workbookBinaries, db.fileHandles],
       async () => {
         await Promise.all([
           db.datasets.clear(),
           db.cards.clear(),
           db.studySessions.clear(),
+          db.quizSessions.clear(),
           db.activity.clear(),
           db.workbookBinaries.clear(),
           db.fileHandles.clear()
