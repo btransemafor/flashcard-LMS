@@ -93,12 +93,12 @@ export function Flashcard({ card, revealed, onReveal, onPrev, onNext, onHide }: 
         >
           <span className="badge-primary">{card.topic}</span>
           <p className="whitespace-pre-line break-words text-2xl font-semibold text-ink">{card.term}</p>
-          <p className="text-xs text-ink-muted">Tap card to reveal</p>
+        {/*   <p className="text-xs text-ink-muted">Tap card to reveal</p> */}
         </div>
 
         {/* Back: Definition + Example + Notes + Tags */}
         <div
-          className="flip-card-face back card-surface absolute inset-0 flex flex-col gap-4 overflow-y-auto p-8"
+          className="flip-card-face back card-surface absolute inset-0 flex flex-col gap-4 overflow-y-auto py-2 px-8"
           onClick={() => {
             // If user taps the back face, flip back to the front (term)
             onHide?.();
@@ -107,7 +107,7 @@ export function Flashcard({ card, revealed, onReveal, onPrev, onNext, onHide }: 
           <div role="status" className="sr-only">
             Answer revealed
           </div>
-          <div className="mt-2">
+          <div className="">
             <button
               type="button"
               onClick={(e) => {
