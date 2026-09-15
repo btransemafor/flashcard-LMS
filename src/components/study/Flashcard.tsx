@@ -35,13 +35,51 @@ export function Flashcard({ card, revealed, onReveal, onPrev, onNext }: Flashcar
     [onPrev, onNext]
   );
 
+  const onPointerCancel = useCallback(() => {
+    startX.current = null;
+  }, []);
+
+  // Touch fallback for some mobile browsers
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+  }, []);
+
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (startX.current === null) return;
+    const dx = e.changedTouches[0].clientX - startX.current;
+    startX.current = null;
+    if (Math.abs(dx) < threshold) return;
+    if (dx > 0) onPrev?.();
+    else onNext?.();
+  }, [onPrev, onNext]);
+
   return (
     <div className="flip-card-container mx-auto w-full max-w-xl">
       <div
         className={`flip-card-inner relative min-h-[320px] w-full ${revealed ? 'is-flipped' : ''}`}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       >
+        {/* Prev / Next visible buttons for clarity on mobile */}
+        <button
+          type="button"
+          aria-label="Previous card"
+          onClick={() => onPrev?.()}
+          className="absolute left-2 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-ink shadow-lg"
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          aria-label="Next card"
+          onClick={() => onNext?.()}
+          className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-ink shadow-lg"
+        >
+          ›
+        </button>
         {/* Front: Term */}
         <div className="flip-card-face card-surface absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
           <span className="badge-primary">{card.topic}</span>
