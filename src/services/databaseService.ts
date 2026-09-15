@@ -136,16 +136,20 @@ export async function getFileHandleRecord(datasetId: string): Promise<FileHandle
 
 export async function clearAllLocalData(): Promise<void> {
   await guarded(async () => {
-    await db.transaction('rw', db.datasets, db.cards, db.studySessions, db.activity, db.workbookBinaries, db.fileHandles, async () => {
-      await Promise.all([
-        db.datasets.clear(),
-        db.cards.clear(),
-        db.studySessions.clear(),
-        db.activity.clear(),
-        db.workbookBinaries.clear(),
-        db.fileHandles.clear()
-      ]);
-    });
+    await db.transaction(
+      'rw',
+      [db.datasets, db.cards, db.studySessions, db.activity, db.workbookBinaries, db.fileHandles],
+      async () => {
+        await Promise.all([
+          db.datasets.clear(),
+          db.cards.clear(),
+          db.studySessions.clear(),
+          db.activity.clear(),
+          db.workbookBinaries.clear(),
+          db.fileHandles.clear()
+        ]);
+      }
+    );
   });
 }
 
