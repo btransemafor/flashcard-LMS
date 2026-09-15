@@ -81,16 +81,19 @@ export function Flashcard({ card, revealed, onReveal, onPrev, onNext, onHide }: 
         >
           ›
         </button>
-        {/* Front: Term */}
-        <div className="flip-card-face card-surface absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
+        {/* Front: Term (tap anywhere to reveal) */}
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => onReveal()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') onReveal();
+          }}
+          className="flip-card-face card-surface absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center cursor-pointer"
+        >
           <span className="badge-primary">{card.topic}</span>
           <p className="whitespace-pre-line break-words text-2xl font-semibold text-ink">{card.term}</p>
-          {!revealed && (
-            <button type="button" onClick={onReveal} className="btn-primary mt-2">
-              Reveal answer
-            </button>
-          )}
-          <p className="text-xs text-ink-muted">Press Space to reveal</p>
+          <p className="text-xs text-ink-muted">Tap card to reveal</p>
         </div>
 
         {/* Back: Definition + Example + Notes + Tags */}
