@@ -175,6 +175,7 @@ function prefersReducedMotion(): boolean {
 export function QuizPanel({ cards, onClose, initialSessionId }: QuizPanelProps) {
   const [started, setStarted] = useState(false);
   const [config, setConfig] = useState<QuizConfig>({ ...DEFAULT_CONFIG });
+  const [questionCountInput, setQuestionCountInput] = useState<string>(String(DEFAULT_CONFIG.questionCount));
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -214,6 +215,11 @@ export function QuizPanel({ cards, onClose, initialSessionId }: QuizPanelProps) 
   useEffect(() => {
     questionStartRef.current = Date.now();
   }, [currentIndex, started]);
+
+  // keep the string input in sync with config.questionCount (when reset or programmatic change)
+  useEffect(() => {
+    setQuestionCountInput(String(config.questionCount));
+  }, [config.questionCount]);
 
   const resetLocalState = () => {
     setCurrentIndex(0);
@@ -562,11 +568,22 @@ export function QuizPanel({ cards, onClose, initialSessionId }: QuizPanelProps) 
             <label className="flex flex-col gap-1.5 rounded-lg border border-border px-3.5 py-3">
               <span className="text-xs font-medium text-ink-secondary">Number of questions</span>
               <input
-                type="number"
-                min={1}
-                max={200}
-                value={config.questionCount}
-                onChange={(e) => setConfig((c) => ({ ...c, questionCount: Math.max(1, Number(e.target.value) || 1) }))}
+                inputMode="numeric"
+                pattern="[0-9]*"
+                type="text"
+                maxLength={3}
+                value={questionCountInput}
+                onChange={(e) => {
+                  // allow empty while editing, strip non-digits
+                  const sanitized = e.target.value.replace(/\D/g, '');
+                  setQuestionCountInput(sanitized);
+                }}
+                onBlur={() => {
+                  const parsed = Number(questionCountInput) || DEFAULT_CONFIG.questionCount;
+                  const bounded = Math.max(1, Math.min(200, Math.floor(parsed)));
+                  setConfig((c) => ({ ...c, questionCount: bounded }));
+                  setQuestionCountInput(String(bounded));
+                }}
                 className="input-field !py-1.5"
               />
             </label>
