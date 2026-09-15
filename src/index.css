@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-bg-warm text-ink font-sans text-[15px] leading-relaxed;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-semibold text-ink tracking-tight;
+  }
+
+  :focus-visible {
+    outline: 2px solid #3157E5;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background-color: #E9EEFF;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors duration-200 min-h-[44px] disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-hover;
+  }
+  .btn-secondary {
+    @apply btn bg-surface border border-border text-ink hover:border-border-strong hover:bg-surface-secondary;
+  }
+  .btn-ghost {
+    @apply btn text-ink-secondary hover:bg-surface-secondary hover:text-ink;
+  }
+  .btn-danger {
+    @apply btn bg-error text-white hover:opacity-90;
+  }
+  .card-surface {
+    @apply bg-surface border border-border rounded-xl shadow-subtle;
+  }
+  .input-field {
+    @apply w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:ring-1 focus:ring-primary transition-colors duration-200;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium;
+  }
+  .badge-success {
+    @apply badge bg-success-subtle text-success;
+  }
+  .badge-warning {
+    @apply badge bg-warning-subtle text-warning;
+  }
+  .badge-error {
+    @apply badge bg-error-subtle text-error;
+  }
+  .badge-primary {
+    @apply badge bg-primary-subtle text-primary;
+  }
+  .badge-neutral {
+    @apply badge bg-surface-secondary text-ink-secondary border border-border;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.reduced-motion * {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}
+
+.compact-density {
+  --density-scale: 0.85;
+}
+
+/* Flashcard flip */
+.flip-card-container {
+  perspective: 1400px;
+}
+.flip-card-inner {
+  transition: transform 220ms ease;
+  transform-style: preserve-3d;
+}
+.flip-card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+.flip-card-face {
+  backface-visibility: hidden;
+}
+.flip-card-face.back {
+  transform: rotateY(180deg);
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+  }
+  .print-page {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
