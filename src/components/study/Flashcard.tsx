@@ -8,9 +8,10 @@ interface FlashcardProps {
   onReveal: () => void;
   onPrev?: () => void;
   onNext?: () => void;
+  onHide?: () => void;
 }
 
-export function Flashcard({ card, revealed, onReveal, onPrev, onNext }: FlashcardProps) {
+export function Flashcard({ card, revealed, onReveal, onPrev, onNext, onHide }: FlashcardProps) {
   const startX = useRef<number | null>(null);
   const threshold = 50; // px
 
@@ -93,9 +94,27 @@ export function Flashcard({ card, revealed, onReveal, onPrev, onNext }: Flashcar
         </div>
 
         {/* Back: Definition + Example + Notes + Tags */}
-        <div className="flip-card-face back card-surface absolute inset-0 flex flex-col gap-4 overflow-y-auto p-8">
+        <div
+          className="flip-card-face back card-surface absolute inset-0 flex flex-col gap-4 overflow-y-auto p-8"
+          onClick={() => {
+            // If user taps the back face, flip back to the front (term)
+            onHide?.();
+          }}
+        >
           <div role="status" className="sr-only">
             Answer revealed
+          </div>
+          <div className="mt-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onPrev?.();
+              }}
+              className="btn-ghost mr-2"
+            >
+              ← Previous
+            </button>
           </div>
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">Definition</p>

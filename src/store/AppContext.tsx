@@ -78,6 +78,7 @@ interface AppContextValue {
     rateCard: (rating: Rating) => Promise<void>;
     prevCard: () => void;
     skipCard: () => void;
+    hideCard: () => void;
     endSession: () => Promise<void>;
     dismissSessionSummary: () => void;
     exportExcel: () => Promise<void>;
@@ -480,6 +481,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         rateCard,
         prevCard: useCallback(() => dispatch({ type: 'PREV_CARD' }), []),
         skipCard: useCallback(() => dispatch({ type: 'SKIP_CARD' }), []),
+        hideCard: useCallback(() => dispatch({ type: 'HIDE_CARD' }), []),
         endSession,
         dismissSessionSummary,
         exportExcel,

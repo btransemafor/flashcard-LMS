@@ -23,7 +23,7 @@ export function StudyView({ topicFilter, onExitTopicFilter, onNavigate }: StudyV
     actions: { startSession, revealCard, rateCard, endSession, dismissSessionSummary, saveProgress, exportExcel }
   } = useApp();
   // extract navigation helpers
-  const { prevCard, skipCard } = useApp().actions;
+  const { prevCard, skipCard, hideCard } = useApp().actions;
 
   const [confirmEndOpen, setConfirmEndOpen] = useState(false);
   const startedForTopic = useRef<string | null>(null);
@@ -146,7 +146,7 @@ export function StudyView({ topicFilter, onExitTopicFilter, onNavigate }: StudyV
         onEnd={requestEndSession}
       />
 
-      <Flashcard card={currentCard} revealed={activeSession.revealed} onReveal={revealCard} onPrev={prevCard} onNext={skipCard} />
+      <Flashcard card={currentCard} revealed={activeSession.revealed} onReveal={revealCard} onPrev={prevCard} onNext={skipCard} onHide={hideCard} />
 
       <div className="mt-6">
         <RatingControls disabled={!activeSession.revealed} onRate={rateCard} />
