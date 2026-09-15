@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Tag } from 'lucide-react';
 import type { Card } from '@/types';
 
@@ -6,12 +6,42 @@ interface FlashcardProps {
   card: Card;
   revealed: boolean;
   onReveal: () => void;
+  onPrev?: () => void;
+  onNext?: () => void;
 }
 
-export function Flashcard({ card, revealed, onReveal }: FlashcardProps) {
+export function Flashcard({ card, revealed, onReveal, onPrev, onNext }: FlashcardProps) {
+  const startX = useRef<number | null>(null);
+  const threshold = 50; // px
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    startX.current = e.clientX;
+  }, []);
+
+  const onPointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      if (startX.current === null) return;
+      const dx = e.clientX - startX.current;
+      startX.current = null;
+      if (Math.abs(dx) < threshold) return;
+      if (dx > 0) {
+        // swipe right -> previous
+        onPrev?.();
+      } else {
+        // swipe left -> next
+        onNext?.();
+      }
+    },
+    [onPrev, onNext]
+  );
+
   return (
     <div className="flip-card-container mx-auto w-full max-w-xl">
-      <div className={`flip-card-inner relative min-h-[320px] w-full ${revealed ? 'is-flipped' : ''}`}>
+      <div
+        className={`flip-card-inner relative min-h-[320px] w-full ${revealed ? 'is-flipped' : ''}`}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+      >
         {/* Front: Term */}
         <div className="flip-card-face card-surface absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
           <span className="badge-primary">{card.topic}</span>

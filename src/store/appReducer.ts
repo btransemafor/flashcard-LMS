@@ -47,6 +47,8 @@ export type AppAction =
   | { type: 'SET_UI_PREF'; payload: Partial<UIPreferences> }
   | { type: 'START_SESSION'; payload: Card[] }
   | { type: 'REVEAL_CARD' }
+  | { type: 'PREV_CARD' }
+  | { type: 'SKIP_CARD' }
   | { type: 'ANSWER_CARD'; payload: { updatedCard: Card; rescheduleEntry: SessionRescheduleEntry; isCorrect: boolean } }
   | { type: 'END_SESSION' }
   | { type: 'DISMISS_SESSION_SUMMARY' }
@@ -114,6 +116,16 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       };
     case 'REVEAL_CARD':
       return state.activeSession ? { ...state, activeSession: { ...state.activeSession, revealed: true } } : state;
+    case 'PREV_CARD': {
+      if (!state.activeSession) return state;
+      const idx = Math.max(0, state.activeSession.currentIndex - 1);
+      return { ...state, activeSession: { ...state.activeSession, currentIndex: idx, revealed: false } };
+    }
+    case 'SKIP_CARD': {
+      if (!state.activeSession) return state;
+      const idx = state.activeSession.currentIndex + 1;
+      return { ...state, activeSession: { ...state.activeSession, currentIndex: idx, revealed: false } };
+    }
     case 'ANSWER_CARD': {
       if (!state.activeSession) return state;
       const updatedCards = state.cards.map((c) => (c.id === action.payload.updatedCard.id ? action.payload.updatedCard : c));
