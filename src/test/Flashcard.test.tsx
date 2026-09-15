@@ -24,14 +24,14 @@ describe('Flashcard', () => {
   it('shows the term and a reveal button before being revealed', () => {
     render(<Flashcard card={card} revealed={false} onReveal={() => {}} />);
     expect(screen.getByText('polymorphism')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /reveal answer/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /polymorphism/i })).toBeInTheDocument();
   });
 
   it('calls onReveal when the reveal button is clicked', async () => {
     const onReveal = vi.fn();
     const user = userEvent.setup();
     render(<Flashcard card={card} revealed={false} onReveal={onReveal} />);
-    await user.click(screen.getByRole('button', { name: /reveal answer/i }));
+    await user.click(screen.getByRole('button', { name: /polymorphism/i }));
     expect(onReveal).toHaveBeenCalledTimes(1);
   });
 
